@@ -38,8 +38,8 @@ pre_configure_target() {
 # dont use some optimizations because of problems
   MAKEFLAGS=-j1
 # copy linux/compiler-gcc5.h
-  cp $PKG_BUILD/include/linux/compiler-gcc5.h $PKG_BUILD/include/linux/compiler-gcc6.h
-  cp $PKG_BUILD/include/linux/compiler-gcc6.h $PKG_BUILD/include/linux/compiler-gcc7.h
+  cp include/linux/compiler-gcc5.h include/linux/compiler-gcc6.h
+  cp include/linux/compiler-gcc6.h include/linux/compiler-gcc7.h
 }
 
 make_target() {
