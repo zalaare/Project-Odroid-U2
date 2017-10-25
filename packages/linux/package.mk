@@ -1,19 +1,19 @@
 ################################################################################
-#      This file is part of OpenELEC - http://www.openelec.tv
-#      Copyright (C) 2009-2016 Stephan Raue (stephan@openelec.tv)
+#      This file is part of LibreELEC - http://www.libreelec.tv
+#      Copyright (C) 2016-present Team LibreELEC
 #
-#  OpenELEC is free software: you can redistribute it and/or modify
+#  LibreELEC is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation, either version 2 of the License, or
 #  (at your option) any later version.
 #
-#  OpenELEC is distributed in the hope that it will be useful,
+#  LibreELEC is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with OpenELEC.  If not, see <http://www.gnu.org/licenses/>.
+#  along with LibreELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
 PKG_NAME="linux"
@@ -24,7 +24,7 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org"
 PKG_DEPENDS_HOST="linux-api-headers:host"
-PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host lzop:host wireless-regdb"
+PKG_DEPENDS_TARGET="toolchain cpio:host kmod:host pciutils xz:host wireless-regdb"
 PKG_DEPENDS_INIT="toolchain"
 PKG_NEED_UNPACK="$LINUX_DEPENDS"
 PKG_PRIORITY="optional"
@@ -40,6 +40,10 @@ if [ "$BUILD_ANDROID_BOOTIMG" = "yes" ]; then
 fi
 
 post_patch() {
+  # copy old compiler-gcc5 over for gcc6 and gcc7
+  cp $PKG_BUILD/include/linux/compiler-gcc5.h $PKG_BUILD/include/linux/compiler-gcc6.h
+  cp $PKG_BUILD/include/linux/compiler-gcc6.h $PKG_BUILD/include/linux/compiler-gcc7.h
+
   if [ -f $PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
     KERNEL_CFG_FILE=$PROJECT_DIR/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf
   elif [ -f $ROOT/.libreelec/projects/$PROJECT/$PKG_NAME/$PKG_NAME.$TARGET_ARCH.conf ]; then
@@ -113,9 +117,9 @@ pre_make_target() {
 
 make_target() {
   LDFLAGS="" make modules
-  LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
-  rm -f $INSTALL/lib/modules/*/build
-  rm -f $INSTALL/lib/modules/*/source
+  LDFLAGS="" make INSTALL_MOD_PATH=$INSTALL/usr DEPMOD="$ROOT/$TOOLCHAIN/bin/depmod" modules_install
+  rm -f $INSTALL/usr/lib/modules/*/build
+  rm -f $INSTALL/usr/lib/modules/*/source
 
   ( cd $ROOT
     rm -rf $ROOT/$BUILD/initramfs
@@ -151,29 +155,29 @@ make_init() {
 makeinstall_init() {
   if [ -n "$INITRAMFS_MODULES" ]; then
     mkdir -p $INSTALL/etc
-    mkdir -p $INSTALL/lib/modules
+    mkdir -p $INSTALL/usr/lib/modules
 
     for i in $INITRAMFS_MODULES; do
-      module=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name $i.ko`
+      module=`find .install_pkg/usr/lib/modules/$(get_module_dir)/kernel -name $i.ko`
       if [ -n "$module" ]; then
         echo $i >> $INSTALL/etc/modules
-        cp $module $INSTALL/lib/modules/`basename $module`
+        cp $module $INSTALL/usr/lib/modules/`basename $module`
       fi
     done
   fi
 
   if [ "$UVESAFB_SUPPORT" = yes ]; then
-    mkdir -p $INSTALL/lib/modules
-      uvesafb=`find .install_pkg/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
-      cp $uvesafb $INSTALL/lib/modules/`basename $uvesafb`
+    mkdir -p $INSTALL/usr/lib/modules
+      uvesafb=`find .install_pkg/usr/lib/modules/$(get_module_dir)/kernel -name uvesafb.ko`
+      cp $uvesafb $INSTALL/usr/lib/modules/`basename $uvesafb`
   fi
 }
 
 post_install() {
   ln -sfn /storage/.config/smsc95xx_mac_addr $INSTALL/etc/smsc95xx_mac_addr
-  mkdir -p $INSTALL/lib/firmware/
-    ln -sfn /storage/.config/firmware/ $INSTALL/lib/firmware/updates
+  mkdir -p $INSTALL/usr/lib/firmware/
+    ln -sfn /storage/.config/firmware/ $INSTALL/usr/lib/firmware/updates
 
   # bluez looks in /etc/firmware/
-    ln -sfn /lib/firmware/ $INSTALL/etc/firmware
+    ln -sfn /usr/lib/firmware/ $INSTALL/etc/firmware
 }

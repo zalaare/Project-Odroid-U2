@@ -16,26 +16,26 @@
 #  along with LibreELEC.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
-PKG_NAME="xf86-video-armsoc"
-PKG_VERSION="1.4.0"
+PKG_MK="$ROOT/packages/x11/lib/libXfixes/package.mk"
+
+PKG_NAME="libXfixes"
+PKG_VERSION="$(grep ^PKG_VERSION $PKG_MK | awk -F '=' '{print $2}' | sed 's/["]//g' )"
 PKG_REV="1"
-PKG_ARCH="arm"
-PKG_LICENSE=""
-PKG_SITE="http://www.hardkernel.org"
-PKG_URL="$ODROID_MIRROR/$PKG_NAME-$PKG_VERSION.tar.xz"
-PKG_DEPENDS_TARGET="toolchain util-macros xorg-server"
-PKG_NEED_UNPACK="$LINUX_DEPENDS"
+PKG_ARCH="any"
+PKG_LICENSE="OSS"
+PKG_SITE="http://www.X.org"
+PKG_URL="$(grep ^PKG_URL $PKG_MK | awk -F '=' '{print $2}' | sed 's/["]//g' )"
+PKG_DEPENDS_TARGET="$(grep ^PKG_DEPENDS_TARGET $PKG_MK | awk -F '=' '{print $2}' | sed 's/["]//g' )"
 PKG_PRIORITY="optional"
-PKG_SECTION="x11/driver"
-PKG_SHORTDESC="xf86-video-armsoc: The Xorg driver for some ARM video chips"
-PKG_LONGDESC=""
+PKG_SECTION="x11/lib"
+PKG_SHORTDESC="libxfixes: X Fixes Library"
+PKG_LONGDESC="X Fixes Library"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="yes"
 
-PKG_CONFIGURE_OPTS_TARGET="--with-xorg-module-dir=$XORG_PATH_MODULES --with-drmmode=exynos"
+PKG_CONFIGURE_OPTS_TARGET="--disable-static --enable-shared"
 
-post_makeinstall_target() {
-  mkdir -p $INSTALL/etc/X11/xorg.conf.d
-    cp $PKG_DIR/config/*.conf $INSTALL/etc/X11/xorg.conf.d/20-armsoc.conf
+pre_configure_target() {
+  export CFLAGS="$CFLAGS -fPIC"
 }

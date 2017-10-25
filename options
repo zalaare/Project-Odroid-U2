@@ -121,7 +121,7 @@
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
-    FIRMWARE="misc-firmware wlan-firmware dvb-firmware"
+    FIRMWARE="misc-firmware wlan-firmware dvb-firmware samsung-firmware"
 
   # build and install ATV IR remote support (yes / no)
     ATVCLIENT_SUPPORT="no"
@@ -148,11 +148,8 @@
     EXTRA_DEPS="mkimage"
     EXTRA_DEPS_PKG="u-boot-tools"
 
-  # kernel image name
-    KERNEL_NAME="kernel.img"
-
   # Distribution Specific source location : Additional
-    ODROID_MIRROR="http://freeweb.mine.nu/zalaare"
+    ODROID_MIRROR="https://zalaare.freeddns.org/Odroid"
 
   # set the start of the system partition during the mkimage process
     SYSTEM_PART_START=3072
