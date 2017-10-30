@@ -217,8 +217,6 @@ if [ ! "$KODIPLAYER_DRIVER" = default ]; then
   elif [ "$KODIPLAYER_DRIVER" = odroid-mfc ]; then
     KODI_PLAYER="-DENABLE_MFC=ON"
     PKG_DEPENDS_TARGET="${PKG_DEPENDS_TARGET/ $KODIPLAYER_DRIVER/}"
-    EGL_LIBS="-L$SYSROOT_PREFIX/usr/lib -lEGL"
-    EGL_CFLAGS="-I$SYSROOT_PREFIX/usr/include"
   fi
 fi
 
@@ -242,7 +240,7 @@ PKG_CMAKE_OPTS_TARGET="-DNATIVEPREFIX=$ROOT/$TOOLCHAIN \
                        -DENABLE_CCACHE=ON \
                        -DENABLE_LIRC=ON \
                        -DENABLE_EVENTCLIENTS=ON \
-                       -DENABLE_LDGOLD=OFF \
+                       -DENABLE_LDGOLD=ON \
                        $KODI_ARCH \
                        $KODI_OPENGL \
                        $KODI_OPENGLES \
@@ -313,8 +311,8 @@ post_makeinstall_target() {
     cp -R $PKG_DIR/config/repository.kodi.game $INSTALL/usr/share/kodi/addons
 
   mkdir -p $INSTALL/usr/share/kodi/config
-    cp $PKG_DIR/config/guisettings.xml $INSTALL/usr/share/kodi/config
-    cp $PKG_DIR/config/sources.xml $INSTALL/usr/share/kodi/config
+    cp -R $PKG_DIR/config/guisettings.xml $INSTALL/usr/share/kodi/config
+    cp -R $PKG_DIR/config/sources.xml $INSTALL/usr/share/kodi/config
 
 # install project specific configs
     if [ -n "$DEVICE" -a -f $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/guisettings.xml ]; then
@@ -331,20 +329,20 @@ post_makeinstall_target() {
 
   mkdir -p $INSTALL/usr/share/kodi/system/
     if [ -n "$DEVICE" -a -f $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/advancedsettings.xml ]; then
-      cp $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/advancedsettings.xml $INSTALL/usr/share/kodi/system/
+      cp -R $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/advancedsettings.xml $INSTALL/usr/share/kodi/system/
     elif [ -f $PROJECT_DIR/$PROJECT/kodi/advancedsettings.xml ]; then
-      cp $PROJECT_DIR/$PROJECT/kodi/advancedsettings.xml $INSTALL/usr/share/kodi/system/
+      cp -R $PROJECT_DIR/$PROJECT/kodi/advancedsettings.xml $INSTALL/usr/share/kodi/system/
     else
-      cp $PKG_DIR/config/advancedsettings.xml $INSTALL/usr/share/kodi/system/
+      cp -R $PKG_DIR/config/advancedsettings.xml $INSTALL/usr/share/kodi/system/
     fi
 
   mkdir -p $INSTALL/usr/share/kodi/system/settings
     if [ -n "$DEVICE" -a -f $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/appliance.xml ]; then
-      cp $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/appliance.xml $INSTALL/usr/share/kodi/system/settings
+      cp -R $PROJECT_DIR/$PROJECT/devices/$DEVICE/kodi/appliance.xml $INSTALL/usr/share/kodi/system/settings
     elif [ -f $PROJECT_DIR/$PROJECT/kodi/appliance.xml ]; then
-      cp $PROJECT_DIR/$PROJECT/kodi/appliance.xml $INSTALL/usr/share/kodi/system/settings
+      cp -R $PROJECT_DIR/$PROJECT/kodi/appliance.xml $INSTALL/usr/share/kodi/system/settings
     else
-      cp $PKG_DIR/config/appliance.xml $INSTALL/usr/share/kodi/system/settings
+      cp -R $PKG_DIR/config/appliance.xml $INSTALL/usr/share/kodi/system/settings
     fi
 
   # update addon manifest
