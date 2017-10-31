@@ -66,7 +66,7 @@ fi
 
 unpack() {
   mkdir -p $BUILD/$PKG_SOURCE_DIR
-  $SCRIPTS/extract $PKG_NAME $(basename $PKG_URL) $BUILD/$PKG_SOURCE_DIR
+  $SCRIPTS/extract $PKG_NAME $BUILD/$PKG_SOURCE_DIR
 }
 
 make_target() {
